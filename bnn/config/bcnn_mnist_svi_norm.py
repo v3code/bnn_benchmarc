@@ -29,6 +29,8 @@ def get_config():
         ),
     )
 
+    cfg.epochs = 30
+
     cfg.model.conv_configs = cnn_configs
     cfg.model.num_classes = 10
     cfg.model.head_in_dim = 16 * 8 * 8
@@ -43,6 +45,7 @@ def get_config():
     cfg.model.head_hidden_dim = 128
     cfg.model.head_activation = 'hardswish'
 
+    base_cfg.predict_num_samples = 30
 
     cfg.loggers.wandb = True
     cfg.wandb.name = 'BCNN MNIST SVI Normal'
