@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "bnn"
+version = "0.1.0"
+description = ""
+authors = ["v3code <vitalik.w555@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pyro-ppl = "^1.8.4"
+torchmetrics = "^0.11.4"
+torchvision = "^0.15.1"
+ml-collections = "^0.1.1"
+einops = "^0.6.1"
+wandb = "^0.15.1"
+
+[tool.poetry.scripts]
+train = 'bnn.scripts.train:main'
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
