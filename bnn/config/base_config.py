@@ -7,6 +7,8 @@ from bnn.utils.torch_utils import get_auto_device
 base_cfg = ConfigDict()
 base_cfg.name = 'base_cfg'
 
+base_cfg.seed = 42
+
 base_cfg.project = 'BNN Benchmark'
 
 base_cfg.epochs = 10
@@ -24,9 +26,9 @@ base_cfg.pbar_step = 5
 
 base_cfg.log_step = 25
 
-base_cfg.optim_name = 'adam'
+base_cfg.optim_name = 'adamw'
 base_cfg.optim = ConfigDict()
-base_cfg.optim.optim_args = dict(lr=1e-3)
+base_cfg.optim.optim_args = dict(lr=1e-2, weight_decay=0.01)
 
 base_cfg.infer_type = 'svi'
 base_cfg.loss_config = ConfigDict()

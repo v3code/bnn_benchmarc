@@ -42,8 +42,8 @@ class BNNClassifier(PyroModule):
 
     def forward(self, x: torch.Tensor, obs: Optional[torch.Tensor] = None):
         x_hat = self.norm(x)
-        for layer in self.layers:
-            x_hat = self.activation(layer(x))
+        for i, layer in enumerate(self.layers):
+            x_hat = self.activation(layer(x_hat))
         with pyro.plate('data', x.shape[0]):
             pyro.sample('obs', dist.Categorical(logits=x_hat), obs=obs)
         return x_hat

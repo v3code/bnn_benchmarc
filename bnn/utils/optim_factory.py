@@ -11,6 +11,6 @@ def get_optim(config: ConfigDict):
     elif optim_name == 'adamw':
         return PyroOptim(AdamW, **config.optim.to_dict())
     elif optim_name == 'clipped-adam':
-        return ClippedAdam(**config.optim.to_dict)
+        return ClippedAdam(**config.optim.to_dict())
     else:
         raise ValueError(f'Optimizer by name "{optim_name}" is not supported')

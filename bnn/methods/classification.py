@@ -24,8 +24,8 @@ def classification_svi_method(config: ConfigDict, log: Callable, checkpoint: Opt
     optim = get_optim(config)
     infer = SVI(model, guide, optim, loss=Trace_ELBO(**config.loss_config))
     epoch, step = init_svi_method(model, optim, guide, checkpoint)
-    step = 0  # TODO fix step checkpointing
     train_dataloader, val_dataloader = create_dataloaders(train_dataset, val_dataset, config)
+    step = epoch * len(train_dataloader)  # TODO fix step checkpointing
     while epoch < config.epochs:
         # train step
         guide.requires_grad_(True)
@@ -49,7 +49,7 @@ def classification_svi_method(config: ConfigDict, log: Callable, checkpoint: Opt
         guide.requires_grad_(False)
         model.eval()
         guide.eval()
-        f1_score = F1Score('multiclass', num_classes=config.model.num_classes).to(config.device)
+        f1_score = F1Score('multiclass', num_classes=config.num_classes).to(config.device)
         val_loss = MeanMetric().to(config.device)
         predictive = Predictive(model, guide=guide, return_sites=['obs'], num_samples=config.predict_num_samples).to(config.device)
         with torch.no_grad():
@@ -57,6 +57,8 @@ def classification_svi_method(config: ConfigDict, log: Callable, checkpoint: Opt
                 data, label = batch
                 data = data.to(config.device)
                 label = label.to(config.device)
+                if config.model_name == 'bnn':
+                    data = torch.flatten(data, 1)
                 loss = infer.evaluate_loss(data, label)
                 y_pred = torch.round(torch.mean(predictive(data)['obs'].float(), dim=0)).to(torch.int8)
                 f1_score.update(y_pred, label)
@@ -71,7 +73,7 @@ def classification_svi_method(config: ConfigDict, log: Callable, checkpoint: Opt
                 step,
                 validation=True)
         epoch += 1
-        save_svi_checkpoint(config.checkpoint_path, epoch, step, model, optim, guide)
+        save_svi_checkpoint(config.checkpoint_root, epoch, step, model, optim, guide)
 
 def classification_mcmc_method(config: ConfigDict, log: Callable, checkpoint: Optional[str] = None):
     train_dataset, val_dataset = get_dataset(config)
@@ -82,8 +84,8 @@ def classification_mcmc_method(config: ConfigDict, log: Callable, checkpoint: Op
     optim = get_optim(config)
     infer = SVI(model, guide, optim, loss=Trace_ELBO(**config.loss_config))
     epoch, step = init_svi_method(model, optim, guide, checkpoint)
-    step = 0  # TODO fix step checkpointing
     train_dataloader, val_dataloader = create_dataloaders(train_dataset, val_dataset, config)
+    step = epoch * len(train_dataloader)  # TODO fix step checkpointing
     while epoch < config.epochs:
         # train step
         guide.requires_grad_(True)
@@ -107,7 +109,7 @@ def classification_mcmc_method(config: ConfigDict, log: Callable, checkpoint: Op
         guide.requires_grad_(False)
         model.eval()
         guide.eval()
-        f1_score = F1Score('multiclass', num_classes=config.model.num_classes)
+        f1_score = F1Score('multiclass', num_classes=config.num_classes)
         val_loss = MeanMetric()
         predictive = Predictive(model, guide=guide, return_sites=['obs'], num_samples=config.predict_num_samples)
         with torch.no_grad():
@@ -116,7 +118,9 @@ def classification_mcmc_method(config: ConfigDict, log: Callable, checkpoint: Op
                 data = data.to(config.device)
                 label = label.to(config.device)
                 loss = infer.evaluate_loss(data, label)
-                y_pred = torch.round(torch.mean(predictive(data)['obs'].float(), dim=0)).to(torch.int8)
+                y_pred = torch.round(torch.mean(predictive(data)['obs'].detach().float(), dim=0)).to(torch.int8)
+                print(y_pred)
+                print(label)
                 f1_score.update(y_pred, label)
                 val_loss.update(loss)
 
@@ -124,7 +128,7 @@ def classification_mcmc_method(config: ConfigDict, log: Callable, checkpoint: Op
             f1_value = f1_score.compute()
             print(f'Validation Loss: {val_loss_value:.4f}')
             print(f'Validation F1 Score: {f1_value:.4f}')
-            log({'val/loss': val_loss.compute(),
+            log({'val/losshardswish': val_loss.compute(),
                  'val/f1': f1_score.compute()},
                 step,
                 validation=True)
