@@ -64,7 +64,8 @@ class BCNNClassifier(PyroModule):
                                           .expand(self.head_fc1.weight.shape)
                                           .to_event(self.head_fc1.weight.dim()))
 
-        self.head_fc1.bias = PyroSample(get_weight_distribution(weight_distribution, dist_config)
+        self.head_fc1.bias = PyroSample(get_weight_distribution(weight_distribution, dist_config, dtype=dtype,
+                                                                device=device)
                                         .expand(self.head_fc1.bias.shape)
                                         .to_event(self.head_fc1.bias.dim()))
 

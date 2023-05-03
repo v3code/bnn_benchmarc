@@ -49,9 +49,9 @@ def classification_svi_method(config: ConfigDict, log: Callable, checkpoint: Opt
         guide.requires_grad_(False)
         model.eval()
         guide.eval()
-        f1_score = F1Score('multiclass', num_classes=config.model.num_classes)
-        val_loss = MeanMetric()
-        predictive = Predictive(model, guide=guide, return_sites=['obs'], num_samples=config.predict_num_samples)
+        f1_score = F1Score('multiclass', num_classes=config.model.num_classes).to(config.device)
+        val_loss = MeanMetric().to(config.device)
+        predictive = Predictive(model, guide=guide, return_sites=['obs'], num_samples=config.predict_num_samples).to(config.device)
         with torch.no_grad():
             for batch in tqdm(val_dataloader, desc=f'Validation Epoch: {epoch}'):
                 data, label = batch
