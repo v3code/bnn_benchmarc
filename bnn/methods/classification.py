@@ -18,7 +18,9 @@ from bnn.utils.torch_utils import init_svi_method, save_svi_checkpoint
 def classification_svi_method(config: ConfigDict, log: Callable, checkpoint: Optional[str] = None):
     train_dataset, val_dataset = get_dataset(config)
     model = get_classifier_model(config)
+    model = model.to(config.device)
     guide = get_guide(config, model)
+    guide = guide.to(config.device)
     optim = get_optim(config)
     infer = SVI(model, guide, optim, loss=Trace_ELBO(**config.loss_config))
     epoch, step = init_svi_method(model, optim, guide, checkpoint)
@@ -74,7 +76,9 @@ def classification_svi_method(config: ConfigDict, log: Callable, checkpoint: Opt
 def classification_mcmc_method(config: ConfigDict, log: Callable, checkpoint: Optional[str] = None):
     train_dataset, val_dataset = get_dataset(config)
     model = get_classifier_model(config)
+    model = model.to(config.device)
     guide = get_guide(config, model)
+    guide = guide.to(config.device)
     optim = get_optim(config)
     infer = SVI(model, guide, optim, loss=Trace_ELBO(**config.loss_config))
     epoch, step = init_svi_method(model, optim, guide, checkpoint)
