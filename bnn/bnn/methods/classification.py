@@ -106,7 +106,7 @@ def classification_mcmc_method(config: ConfigDict, log: Callable, checkpoint: Op
     predictive = Predictive(model=model, posterior_samples=infer.get_samples())
     
     with torch.no_grad():
-        for batch in tqdm(val_dataloader, desc=f'Validation Epoch: {epoch}'):
+        for batch in tqdm(val_dataloader, desc='Validation'):
             data, label = batch
             data = data.to(config.device)
             label = label.to(config.device)
