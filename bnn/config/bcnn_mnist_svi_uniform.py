@@ -10,7 +10,7 @@ from bnn.utils.config_utils import create_conv_config
 def get_config():
     cfg = ConfigDict(base_cfg)
 
-    cfg.name = 'bcnn_mnist_svi_norm'
+    cfg.name = 'bcnn_mnist_svi_uniform'
     cfg.dataset = 'mnist'
     cfg.model_name = 'bcnn'
 
@@ -42,19 +42,19 @@ def get_config():
 
     cfg.model.conv_configs = cnn_configs
     cfg.model.num_classes = 10
-    cfg.model.head_in_dim = 20 * 9 * 9
+    cfg.model.head_in_dim = 20 * 8 * 8
     cfg.batch_size = 256
 
     cfg.model.dist_config = dict(
-        loc=0.,
-        scale=1.
+        low=-1.,
+        high=1.
     )
 
     cfg.optim.optim_args = dict(lr=1e-2)
 
     cfg.loss_jit = True
 
-    cfg.model.weight_distribution = 'normal'
+    cfg.model.weight_distribution = 'uniform'
     cfg.model.use_residuals = (False, False, True)
     cfg.model.head_hidden_dim = 1024
     cfg.model.head_activation = 'selu'
@@ -66,7 +66,7 @@ def get_config():
     cfg.predict_num_samples = 500
 
     cfg.loggers.wandb = True
-    cfg.wandb.name = 'BCNN MNIST SVI Normal'
+    cfg.wandb.name = 'BCNN MNIST SVI Uniform'
     cfg.wandb.dir = os.path.join('logs', cfg.name)
 
     cfg.checkpoint_root = os.path.join('checkpoints', cfg.name)
