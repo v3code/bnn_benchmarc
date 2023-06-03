@@ -6,7 +6,7 @@ from ml_collections import ConfigDict
 from pyro.infer import SVI, Predictive, Trace_ELBO, JitTrace_ELBO
 from pyro.infer.mcmc import NUTS, MCMC
 from pyro.nn import PyroModule
-from torchmetrics import F1Score, MeanMetric, Accuracy
+from torchmetrics import F1Score, MeanMetric, Accuracy, Precision, Recall
 from tqdm import tqdm
 
 from bnn.utils.dataset import get_dataset, create_dataloaders
@@ -55,6 +55,8 @@ def classification_svi_method(config: ConfigDict, log: Callable, checkpoint: Opt
         guide.eval()
         f1_score = F1Score('multiclass', num_classes=config.num_classes)
         accuracy = Accuracy('multiclass', num_classes=config.num_classes)
+        perc = Precision('multiclass', num_classes=config.num_classes)
+        recall = Recall('multiclass', num_classes=config.num_classes)
         val_loss = MeanMetric()
         predictive = Predictive(model, guide=guide, return_sites=['obs'], num_samples=config.predict_num_samples).to(config.device)
         with torch.no_grad():
@@ -69,16 +71,24 @@ def classification_svi_method(config: ConfigDict, log: Callable, checkpoint: Opt
                 y_pred = torch.round(torch.mean(predictive(data)['obs'].detach().float(), dim=0))
                 f1_score.update(y_pred.cpu(), label.cpu())
                 accuracy.update(y_pred.cpu(), label.cpu())
+                perc.update(y_pred.cpu(), label.cpu())
+                recall.update(y_pred.cpu(), label.cpu())
                 val_loss.update(loss)
 
             val_loss_value = val_loss.compute()
             f1_value = f1_score.compute()
             accuracy_value = accuracy.compute()
+            perc_val = perc.compute()
+            rec_val = recall.compute()
             print(f'Validation Loss: {val_loss_value:.4f}')
             print(f'Validation F1 Score: {f1_value:.4f}')
             print(f'Validation Accuracy: {accuracy_value:.4f}')
+            print(f'Validation Precision: {perc_val:.4f}')
+            print(f'Validation Recall: {rec_val:.4f}')
             log({'val/loss': val_loss_value,
                  'val/f1': f1_value,
+                 'val/precision': perc_val,
+                 'val/recall': rec_val,
                  'val/accuracy': accuracy_value},
                 step,
                 validation=True)
