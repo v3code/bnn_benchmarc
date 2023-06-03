@@ -22,6 +22,8 @@ def main():
     torch.manual_seed(args.seed)
     numpy.random.seed(args.seed)
     for config_name in benchmark_configs:
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
         print(f'benchmarking {config_name}')
 
         config = load_config(config_name)
