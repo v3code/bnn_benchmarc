@@ -9,7 +9,7 @@ base_cfg.name = 'base_cfg'
 
 base_cfg.seed = 42
 
-base_cfg.project = 'BNN Benchmark'
+base_cfg.project = 'BCNN Benchmark'
 
 base_cfg.epochs = 10
 

@@ -6,7 +6,7 @@ from ml_collections import ConfigDict
 from pyro.infer import SVI, Predictive, Trace_ELBO, JitTrace_ELBO
 from pyro.infer.mcmc import NUTS, MCMC
 from pyro.nn import PyroModule
-from torchmetrics import F1Score, MeanMetric
+from torchmetrics import F1Score, MeanMetric, Accuracy
 from tqdm import tqdm
 
 from bnn.utils.dataset import get_dataset, create_dataloaders
@@ -54,6 +54,7 @@ def classification_svi_method(config: ConfigDict, log: Callable, checkpoint: Opt
         model.eval()
         guide.eval()
         f1_score = F1Score('multiclass', num_classes=config.num_classes)
+        accuracy = Accuracy('multiclass', num_classes=config.num_classes)
         val_loss = MeanMetric()
         predictive = Predictive(model, guide=guide, return_sites=['obs'], num_samples=config.predict_num_samples).to(config.device)
         with torch.no_grad():
