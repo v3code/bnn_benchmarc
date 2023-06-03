@@ -24,7 +24,7 @@ def main():
     for config_name in benchmark_configs:
         print(f'benchmarking {config_name}')
 
-        config = load_config(args.config)
+        config = load_config(config_name)
 
         on_start_logger, log, on_end_logger = create_logger(config)
         method = get_method(config)
