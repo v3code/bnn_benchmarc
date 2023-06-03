@@ -73,10 +73,13 @@ def classification_svi_method(config: ConfigDict, log: Callable, checkpoint: Opt
 
             val_loss_value = val_loss.compute()
             f1_value = f1_score.compute()
+            accuracy_value = accuracy.compute()
             print(f'Validation Loss: {val_loss_value:.4f}')
             print(f'Validation F1 Score: {f1_value:.4f}')
-            log({'val/loss': val_loss.compute(),
-                 'val/f1': f1_score.compute()},
+            print(f'Validation Accuracy: {accuracy_value:.4f}')
+            log({'val/loss': val_loss.val_loss_value,
+                 'val/f1': f1_value,
+                 'val/accuracy': accuracy_value},
                 step,
                 validation=True)
         epoch += 1
