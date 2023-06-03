@@ -33,7 +33,7 @@ def main():
 
         on_start_logger()
         try:
-            method(config, log, args.checkpoint)
+            method(config, log, None)
         finally:
             on_end_logger()
 

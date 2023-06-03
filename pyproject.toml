@@ -16,6 +16,7 @@ wandb = "^0.15.1"
 
 [tool.poetry.scripts]
 train = 'bnn.scripts.train:main'
+benchmark_svi = 'bnn.scripts.benchmark_svi:main'
 
 
 [build-system]

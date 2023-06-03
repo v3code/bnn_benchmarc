@@ -30,7 +30,7 @@ def get_config():
         ),
     )
 
-    cfg.epochs = 40
+    cfg.epochs = 60
 
     cfg.num_classes = 10
 

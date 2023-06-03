@@ -68,6 +68,7 @@ def classification_svi_method(config: ConfigDict, log: Callable, checkpoint: Opt
                 loss = infer.evaluate_loss(data, label)
                 y_pred = torch.round(torch.mean(predictive(data)['obs'].detach().float(), dim=0))
                 f1_score.update(y_pred.cpu(), label.cpu())
+                accuracy.update(y_pred.cpu(), label.cpu())
                 val_loss.update(loss)
 
             val_loss_value = val_loss.compute()
